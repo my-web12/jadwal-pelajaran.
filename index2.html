@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jadwal Pelajaran Sekolah</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; font-family:'Poppins', sans-serif; }
+body {
+  background: radial-gradient(1200px at 10% -10%, #1e3a8a 0%, #0a1931 40%, #060d20 100%);
+  min-height:100vh; color:white; padding:30px 20px;
+}
+.container { max-width:900px; margin:0 auto; }
+.header { text-align:center; margin-bottom:35px; }
+.header h1 { font-size:2.3rem; font-weight:700; text-shadow: 0 0 20px rgba(96,165,250,0.6); }
+.header p { opacity:0.7; margin-top:6px; }
+.buttons { display:flex; gap:14px; flex-wrap:wrap; justify-content:center; margin-bottom:35px; }
+.btn {
+  background: linear-gradient(135deg, #60a5fa, #3b82f6); color:white; border:none;
+  padding:14px 28px; border-radius:14px; font-weight:700; font-size:1.1rem;
+  cursor:pointer; min-width:90px;
+  box-shadow: 0 0 25px rgba(96,165,250,0.5), 0 8px 20px rgba(0,0,0,0.3);
+  transition: all 0.25s ease;
+}
+.btn:hover { transform: translateY(-3px) scale(1.03); box-shadow: 0 0 35px rgba(96,165,250,0.8); }
+.btn.active { background: linear-gradient(135deg, #93c5fd, #60a5fa); box-shadow: 0 0 45px rgba(147,197,253,0.9); transform: scale(1.05); }
+.card {
+  background: rgba(255,255,255,0.06); backdrop-filter: blur(14px);
+  border:1px solid rgba(147,197,253,0.15); border-radius:18px; overflow:hidden;
+  animation: slideIn 0.35s ease; box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+@keyframes slideIn { from { opacity:0; transform:translateY(15px);} to {opacity:1; transform:translateY(0);} }
+.card-header {
+  background: linear-gradient(90deg, rgba(96,165,250,0.2), rgba(59,130,246,0.1));
+  padding:16px 22px; display:flex; justify-content:space-between; align-items:center;
+  border-bottom:1px solid rgba(255,255,255,0.08);
+}
+.badge { background:#60a5fa; padding:4px 12px; border-radius:20px; font-size:0.75rem; font-weight:700; }
+.list { padding:8px 0; }
+.item { display:flex; align-items:center; gap:14px; padding:14px 22px; border-left:3px solid transparent; transition:0.2s; }
+.item:hover { background: rgba(96,165,250,0.08); border-left-color:#60a5fa; }
+.day {
+  background: linear-gradient(135deg, #1e40af, #3b82f6); width:105px; min-width:105px;
+  text-align:center; padding:8px 0; border-radius:10px; font-weight:700; font-size:0.85rem;
+  box-shadow: 0 0 15px rgba(59,130,246,0.4);
+}
+.subject { color:white; }
+#placeholder {
+  text-align:center; padding:28px; border:2px dashed rgba(255,255,255,0.15);
+  border-radius:16px; background: rgba(255,255,255,0.03);
+  transition: all 0.3s ease;
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>📚 Jadwal Pelajaran Sekolah</h1>
+    <p></p>
+  </div>
+
+  <div class="buttons">
+    <button class="btn" onclick="showJadwal('A')">SENIN</button>
+    <button class="btn" onclick="showJadwal('B')">SELASA</button>
+    <button class="btn" onclick="showJadwal('C')">RABU</button>
+    <button class="btn" onclick="showJadwal('D')">KAMIS</button>
+    <button class="btn" onclick="showJadwal('E')">JUMAT</button>
+  </div>
+
+  <!-- TABEL 1 : Tempat jadwal muncul -->
+  <div id="content"></div>
+
+  <!-- TABEL 2 : Pesan awal - ini yang akan hilang/muncul -->
+  <div id="placeholder">
+    👆 Pilih tombol di atas untuk menampilkan jadwal
+  </div>
+</div>
+
+<script>
+const data = {
+  A: { title:"Jadwal Hari Senin", hari:[
+    {day:"7.10-7.50", mapel:"Bahasa Inggris"},
+    {day:"7.50-9.50", mapel:"Biologi"},
+    {day:"10.00-10.40", mapel:"Geografi"},
+    {day:"10.40-12.00", mapel:"Matematika"},
+    {day:"12.45-14.45", mapel:"Sejarah"}
+  ]},
+  B: { title:"Jadwal Hari Selasa", hari:[
+    {day:"7.10-8.30", mapel:"PAI"},
+    {day:"8.30-9.50", mapel:"Bahasa Indonesia"},
+    {day:"10.00-12.00", mapel:"Ekonomi"},
+    {day:"12.45-14.05", mapel:"Pendidikan pancasila"},
+    {day:"14.05-14.45", mapel:"Bahasa Sunda"}
+  ]},
+  C: { title:"Jadwal Hari Rabu", hari:[
+    {day:"7.10-8.30", mapel:"PKWU"},
+    {day:"8.30-9.50", mapel:"Geografi"},
+    {day:"10.00-12.00", mapel:"Fisika"},
+    {day:"12.45-14.45", mapel:"Sosiologi"}
+  ]},
+  D: { title:"Jadwal Hari Kamis", hari:[
+    {day:"7.10-8.30", mapel:"Matematika"},
+    {day:"8.30-9.50", mapel:"Bahasa Inggris"},
+    {day:"10.00-12.00", mapel:"PJOK"},
+    {day:"12.45-14.45", mapel:"Kimia"}
+  ]},
+  E: { title:"Jadwal Hari Jumat", hari:[
+    {day:"7.10-7.50", mapel:"KKA"},
+    {day:"7.50-8.30", mapel:"Bahasa Indonesia"},
+    {day:"10.00-10.40", mapel:"Informatika"}
+  ]}
+};
+
+let kelasAktif = null;
+
+function showJadwal(kelas){
+  const content = document.getElementById('content');
+  const placeholder = document.getElementById('placeholder');
+  const tombol = event.target;
+
+  // KLIK TOMBOL YANG SAMA LAGI = TUTUP TABEL 1, MUNCULKAN TABEL 2
+  if(kelasAktif === kelas){
+    content.innerHTML = "";
+    placeholder.style.display = "block";
+    tombol.classList.remove('active');
+    kelasAktif = null;
+    return;
+  }
+
+  // KLIK TOMBOL BEDA = TAMPILKAN TABEL 1, SEMBUNYIKAN TABEL 2
+  document.querySelectorAll('.btn').forEach(b=>b.classList.remove('active'));
+  tombol.classList.add('active');
+  
+  placeholder.style.display = "none"; // Tabel 2 HILANG
+
+  const d = data[kelas];
+  let html = `<div class="card">
+    <div class="card-header">
+      <h3>📘 ${d.title}</h3>
+      <span class="badge">${d.hari.length} MAPEL</span>
+    </div>
+    <div class="list">`;
+  
+  d.hari.forEach(h=>{
+    html+=`<div class="item"><div class="day">${h.day}</div><div class="subject">${h.mapel}</div></div>`;
+  });
+  
+  html+=`</div></div>`;
+  content.innerHTML = html; // Tabel 1 MUNCUL
+  kelasAktif = kelas;
+}
+</script>
+</body>
+</html>
